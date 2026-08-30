@@ -1,0 +1,20 @@
+# secrets — never commit a mnemonic
+.env*
+!.env.example
+
+# local keeper state
+backoff.json
+*.backoff.json
+
+# build
+/keeper
+/arcron-keeper
+/cmd/keeper/keeper
+*.exe
+*.test
+vendor/
+
+# editor
+.idea/
+.vscode/
+*.swp

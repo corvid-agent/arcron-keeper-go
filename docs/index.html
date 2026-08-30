@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>arcron-keeper-go</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.45; color: #111; }
+    code, pre { font-family: ui-monospace, monospace; font-size: 0.9em; }
+    pre { background: #f4f4f1; padding: 0.8rem 1rem; overflow: auto; }
+    .warn { border-left: 4px solid #b45309; padding: 0.4rem 0.8rem; background: #fff7ed; }
+    a { color: #1d4ed8; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border-bottom: 1px solid #ddd; text-align: left; padding: 0.35rem 0.4rem; vertical-align: top; }
+  </style>
+</head>
+<body>
+  <h1>arcron-keeper-go</h1>
+  <p>Independent Go keeper bot for Arcron on Algorand <strong>TestNet</strong>.</p>
+  <p class="warn">First-party CorvidLabs demo. <strong>Unaudited. frozen=0</strong>. No MainNet. Do not escrow real value.</p>
+  <ul>
+    <li>Keeper app <code>769891898</code></li>
+    <li>Pulse target <code>769891902</code> (live box 19)</li>
+    <li>Genesis refused unless TestNet <code>SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=</code></li>
+  </ul>
+  <h2>Proof</h2>
+  <table>
+    <tr><th>app</th><td><code>769891898</code></td></tr>
+    <tr><th>upkeep</th><td>box 19 → target <code>769891902</code></td></tr>
+    <tr><th>execute</th><td><strong>not done</strong> — dispenser requires a Google login; no invented txid</td></tr>
+    <tr><th>command</th><td><code>go run ./cmd/keeper --dry-run</code></td></tr>
+  </table>
+  <h2>Run</h2>
+  <pre>go test ./...
+go run ./cmd/keeper --dry-run
+go run ./cmd/keeper --once</pre>
+  <p><a href="https://github.com/corvid-agent/arcron-keeper-go">github.com/corvid-agent/arcron-keeper-go</a></p>
+</body>
+</html>
