@@ -10,6 +10,8 @@ backoff.json
 /keeper
 /arcron-keeper
 /cmd/keeper/keeper
+/cmd/decode/decode
+/cmd/listen/listen
 *.exe
 *.test
 vendor/

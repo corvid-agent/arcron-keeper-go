@@ -57,9 +57,10 @@
 
     <h2>RUN</h2>
     <pre>go test ./...
-go run ./cmd/keeper --dry-run
-python3 scripts/listen.py</pre>
-    <p class="why">Listener writes <code>docs/due.json</code>. It never holds a key. Genesis refused unless TestNet <code>SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=</code>.</p>
+go run ./cmd/decode --id 19
+go run ./cmd/listen
+go run ./cmd/keeper --dry-run</pre>
+    <p class="why">Decode prints the 130-byte head as JSON. Listener writes <code>docs/due.json</code>. Neither holds a key. Genesis refused unless TestNet <code>SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=</code>.</p>
 
     <footer>
       <p>Not arrivals. This board lists due upkeeps the Go keeper would consider — it does not sign and is not an execute.</p>
