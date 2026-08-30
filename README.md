@@ -28,6 +28,16 @@ go run ./cmd/keeper --once    # signs; needs funded TestNet account
 
 Fund the throwaway from [Lora TestNet Fund](https://lora.algokit.io/testnet/fund) (login required). `--dry-run` prints due upkeeps and signs nothing. Default loops. Upkeep **81** is never executed.
 
+## Listener (no key)
+
+`scripts/listen.py` reads TestNet algod boxes on app `769891898`, decodes the 130-byte head, and writes `docs/due.json` (due = last-round ≥ next and balance ≥ fee; skip 81). It does **not** sign, has **no mnemonic**, and is **not** an execute.
+
+Weekdays at 15:00, 18:00, and 22:00 UTC (9am / 12pm / 4pm America/Denver) `.github/workflows/listen.yml` runs it and commits `docs/due.json` if it changed. No secrets. Pages shows that list.
+
+```bash
+python3 scripts/listen.py
+```
+
 ## Cost
 
 Each `execute` pays **min fee + 2000 µALGO extra** (fee pooling for the inner app call and the keeper payment). Today that is 3000 µALGO out; the contract pays the caller the upkeep's base fee (typically 4000–10000 µALGO) only if the inner call succeeds. A rejected `execute` is discarded by algod and costs nothing.
