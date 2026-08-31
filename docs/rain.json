@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-08-31T14:14:04Z",
+  "algod": "https://testnet-api.algonode.cloud",
+  "hub": 770130162,
+  "genesis": "testnet-v1.0",
+  "last_round": 66850378,
+  "next_rain_id": 5,
+  "rains": [
+    {
+      "id": 1,
+      "label": "Corvid daily",
+      "creator": "E5M2OH5XNDMNABJ6VOFOUVR2IKRPCGQH43PVC5P3DWQQ2LV2VJV2FJZQ3E",
+      "mode": "SPLIT",
+      "drip": 50000,
+      "pot": 850000,
+      "tickets": 1,
+      "prize_locked": 0,
+      "commit_round": 0,
+      "status": "open"
+    },
+    {
+      "id": 2,
+      "label": "Corvid GM",
+      "creator": "E5M2OH5XNDMNABJ6VOFOUVR2IKRPCGQH43PVC5P3DWQQ2LV2VJV2FJZQ3E",
+      "mode": "WAVE",
+      "drip": 50000,
+      "pot": 950000,
+      "tickets": 1,
+      "prize_locked": 0,
+      "commit_round": 0,
+      "status": "open"
+    },
+    {
+      "id": 3,
+      "label": "live ALGO one",
+      "creator": "E5M2OH5XNDMNABJ6VOFOUVR2IKRPCGQH43PVC5P3DWQQ2LV2VJV2FJZQ3E",
+      "mode": "ONE",
+      "drip": 50000,
+      "pot": 200000,
+      "tickets": 3,
+      "prize_locked": 50000,
+      "commit_round": 66831694,
+      "status": "abandonable"
+    },
+    {
+      "id": 4,
+      "label": "live ASA split",
+      "creator": "E5M2OH5XNDMNABJ6VOFOUVR2IKRPCGQH43PVC5P3DWQQ2LV2VJV2FJZQ3E",
+      "mode": "SPLIT",
+      "drip": 1000,
+      "pot": 0,
+      "tickets": 1,
+      "prize_locked": 0,
+      "commit_round": 0,
+      "status": "open"
+    },
+    {
+      "id": 5,
+      "label": "swarm audit split",
+      "creator": "N43ZVH3JHOKNQD5VW4FDW3DS6T3W5OXMCEMBZRKFES5TSQD37J5CVBSWIY",
+      "mode": "SPLIT",
+      "drip": 10000,
+      "pot": 0,
+      "tickets": 2,
+      "prize_locked": 0,
+      "commit_round": 0,
+      "status": "open"
+    }
+  ]
+}
