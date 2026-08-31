@@ -1,113 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-board="KEEPER-GO">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>arcron-keeper-go</title>
-  <meta name="description" content="Independent Go keeper plus a no-key listener. Due list from docs/due.json. TestNet only. Not an execute.">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KEEPER-GO — DUE, skip 81</title>
+  <meta name="description" content="TestNet due board from docs/due.json. Skip upkeep 81. Read-only. Not an execute." />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div class="crt" aria-hidden="true"></div>
-  <div class="bezel">
-    <header class="hdr">
-      <div class="hdr-row">
-        <h1>ARCRON-KEEPER-GO</h1>
-        <span class="blink">█</span>
-      </div>
-      <p class="tag">TESTNET · LISTENER DOES NOT SIGN · NO MNEMONIC · NOT AN EXECUTE</p>
-      <p class="warn">First-party CorvidLabs demo. <strong>Unaudited. frozen=0</strong>. No MainNet. Do not escrow real value.</p>
-      <dl class="meta">
-        <div><dt>keeper</dt><dd>769891898</dd></div>
-        <div><dt>pulse</dt><dd>769891902</dd></div>
-        <div><dt>last-round</dt><dd id="last-round">…</dd></div>
-        <div><dt>due</dt><dd id="due-count">…</dd></div>
-        <div><dt>generated</dt><dd id="generated">…</dd></div>
-        <div><dt>skip</dt><dd>upkeep 81</dd></div>
-      </dl>
-      <p class="status" id="status">loading due.json…</p>
+  <main class="crt" id="crt">
+    <header>
+      <h1>Keeper-Go</h1>
+      <div class="meta">TestNet · listener · skip 81 · not an execute</div>
     </header>
 
-    <section class="due" aria-label="due upkeeps">
-      <h2>DUE <span class="n" id="n-due">0</span></h2>
-      <p class="why">last-round ≥ next and balance ≥ fee · skip 81 · from due.json, not live algod</p>
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>target</th>
-            <th>next</th>
-            <th>fee</th>
-            <th>balance</th>
-          </tr>
-        </thead>
-        <tbody id="due-body">
-          <tr><td colspan="5" class="empty">loading…</td></tr>
-        </tbody>
-      </table>
+    <section class="status-row">
+      <div class="label">Headline</div>
+      <div class="flaps big" id="status" aria-label="due headline">DUE</div>
+      <div class="meta" id="subhead">skip 81 · loading due.json · not an execute</div>
     </section>
 
-    <h2>PROOF</h2>
-    <table>
-      <tr><th>app</th><td><code>769891898</code></td></tr>
-      <tr><th>upkeep</th><td>box 19 → target <code>769891902</code></td></tr>
-      <tr><th>execute</th><td><strong>not done</strong> — dispenser requires a Google login; no invented txid</td></tr>
-      <tr><th>command</th><td><code>go run ./cmd/keeper --dry-run</code></td></tr>
-    </table>
+    <section class="board" id="board">
+      <div class="cell">
+        <div class="label">Last round</div>
+        <div class="flaps" id="stat-round" aria-label="last round"></div>
+      </div>
+      <div class="cell">
+        <div class="label">Listed</div>
+        <div class="flaps" id="stat-listed" aria-label="listed upkeeps"></div>
+      </div>
+      <div class="cell">
+        <div class="label">Due count</div>
+        <div class="flaps" id="stat-due" aria-label="due count"></div>
+      </div>
+      <div class="cell">
+        <div class="label">Skipped</div>
+        <div class="flaps" id="stat-skip" aria-label="skipped upkeep ids"></div>
+      </div>
+    </section>
 
-    <h2>RUN</h2>
-    <pre>go test ./...
-go run ./cmd/decode --id 19
-go run ./cmd/listen
-go run ./cmd/keeper --dry-run</pre>
-    <p class="why">Decode prints the 130-byte head as JSON. Listener writes <code>docs/due.json</code>. Neither holds a key. Genesis refused unless TestNet <code>SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=</code>.</p>
+    <section class="due-list" aria-label="due upkeeps">
+      <div class="label">Due list</div>
+      <p class="why">last-round ≥ next and balance ≥ fee · skip 81 · from due.json, not live algod</p>
+      <div id="due-rows"></div>
+    </section>
 
-    <footer>
-      <p>Not arrivals. This board lists due upkeeps the Go keeper would consider — it does not sign and is not an execute.</p>
-      <p>
-        <a href="https://github.com/corvid-agent/arcron-keeper-go">github.com/corvid-agent/arcron-keeper-go</a>
-        ·
-        <a href="https://testnet.explorer.perawallet.app/application/769891898">keeper 769891898</a>
-      </p>
-    </footer>
-  </div>
-  <script>
-    (function () {
-      function $(id) { return document.getElementById(id); }
-      fetch("due.json")
-        .then(function (res) {
-          if (!res.ok) throw new Error("due.json " + res.status);
-          return res.json();
-        })
-        .then(function (data) {
-          var due = data.due || [];
-          $("last-round").textContent = String(data.last_round);
-          $("due-count").textContent = String(data.due_count);
-          $("generated").textContent = data.generated_at || "—";
-          $("n-due").textContent = String(due.length);
-          $("status").textContent =
-            "round " + data.last_round + " · listed " + data.listed +
-            " · due " + data.due_count + " · skip 81 · unsigned listener";
-          var body = $("due-body");
-          if (!due.length) {
-            body.innerHTML = '<tr><td colspan="5" class="empty">none due</td></tr>';
-            return;
-          }
-          body.innerHTML = due.map(function (u) {
-            return "<tr>" +
-              '<td class="num">#' + u.id + "</td>" +
-              '<td class="num">' + u.target + "</td>" +
-              '<td class="num">' + u.next + "</td>" +
-              '<td class="num">' + u.fee + "</td>" +
-              '<td class="num">' + u.balance + "</td>" +
-              "</tr>";
-          }).join("");
-        })
-        .catch(function (err) {
-          $("status").textContent = "due.json failed: " + (err && err.message ? err.message : err);
-          $("due-body").innerHTML = '<tr><td colspan="5" class="empty">due.json unavailable</td></tr>';
-        });
-    })();
-  </script>
+    <p class="notes" id="notes">
+      Unsigned Go listener wrote this list from TestNet algod (last-round ≥ next and balance ≥ fee). Skip upkeep 81. The board does not sign and is not an execute. 
+      <a href="https://github.com/corvid-agent/arcron-keeper-go">source</a>
+      ·
+      <a href="https://testnet.explorer.perawallet.app/application/769891898">keeper 769891898</a>.
+    </p>
+    <p class="err" id="err" hidden></p>
+    <footer class="foot">Arcron is unaudited. TestNet only. Read-only, no wallet. Not an execute.</footer>
+  </main>
+  <script src="./app.js"></script>
 </body>
 </html>
