@@ -12,6 +12,8 @@ backoff.json
 /cmd/keeper/keeper
 /cmd/decode/decode
 /cmd/listen/listen
+/cmd/register/register
+/cmd/simulate/simulate
 *.exe
 *.test
 vendor/

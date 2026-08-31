@@ -7,6 +7,8 @@ import (
 	"fmt"
 
 	"github.com/algorand/go-algorand-sdk/v2/client/v2/algod"
+	"github.com/algorand/go-algorand-sdk/v2/crypto"
+	"github.com/algorand/go-algorand-sdk/v2/types"
 	"github.com/corvid-agent/arcron-keeper-go/internal/upkeep"
 )
 
@@ -21,6 +23,9 @@ const DefaultAlgod = "https://testnet-api.algonode.cloud"
 
 // DefaultApp is the live Arcron keeper on TestNet (alpha-3).
 const DefaultApp uint64 = 769891898
+
+// DefaultPulse is the first-party Pulse demo target on TestNet.
+const DefaultPulse uint64 = 769891902
 
 // Client is an algod handle that has already passed the TestNet genesis gate.
 type Client struct {
@@ -59,6 +64,30 @@ func (c *Client) LastRound(ctx context.Context) (uint64, error) {
 		return 0, err
 	}
 	return st.LastRound, nil
+}
+
+// AppAddress is the keeper app escrow.
+func (c *Client) AppAddress() types.Address {
+	return crypto.GetApplicationAddress(c.AppID)
+}
+
+// NextUpkeepID reads global state next_upkeep_id. That is the box register
+// must reference before the app allocates it.
+func (c *Client) NextUpkeepID(ctx context.Context) (uint64, error) {
+	app, err := c.Algod.GetApplicationByID(c.AppID).Do(ctx)
+	if err != nil {
+		return 0, err
+	}
+	for _, kv := range app.Params.GlobalState {
+		key := kv.Key
+		if raw, err := base64.StdEncoding.DecodeString(key); err == nil {
+			key = string(raw)
+		}
+		if key == "next_upkeep_id" {
+			return kv.Value.Uint, nil
+		}
+	}
+	return 0, fmt.Errorf("app %d: next_upkeep_id missing from global state", c.AppID)
 }
 
 // BoxNames lists box names on the keeper app.

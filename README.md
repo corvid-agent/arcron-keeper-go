@@ -23,6 +23,8 @@ Go 1.24+. Decode and listen need no key. A TestNet mnemonic is required only to 
 go test ./...
 go run ./cmd/decode --id 19   # JSON of the 130-byte head; live box 19 → target 769891902
 go run ./cmd/listen           # writes docs/due.json; skip 81; no key
+go run ./cmd/register         # prints unsigned register group; signs nothing; no --send
+go run ./cmd/simulate         # no-key algod simulate of execute() on due boxes; skip 81; nothing sent
 go run ./cmd/keeper --dry-run # lists due upkeeps; signs nothing
 ```
 
@@ -47,6 +49,32 @@ Weekdays at 15:00, 18:00, and 22:00 UTC (9am / 12pm / 4pm America/Denver) `.gith
 go run ./cmd/listen
 ```
 
+## Register dry-run (no key, never sends)
+
+`go run ./cmd/register` builds the live TestNet register group and prints it as JSON. It does **not** sign, has **no mnemonic**, and has **no `--send`**.
+
+The on-chain method is `register(pay,pay,uint64,byte[][],uint64,uint64,uint64,uint64,uint64,uint64)uint64`, so the group is **three** transactions:
+
+1. payment — box MBR to the app account (`note=arcron:mbr`). Formula: `2500 + 400*(9+130) + 400*len(ARC-4 byte[][])`.
+2. payment — escrow funding to the app account (`note=arcron:funding`). Distinct note so the two pays never share a txid.
+3. app call — ABI `register`, box `u||next_upkeep_id` (9 bytes), default target Pulse `769891902` with `call_args = [tick()uint64 selector]`.
+
+`next_upkeep_id` is read from keeper global state. Sender defaults to an ephemeral address whose secret is discarded (never printed). Pass `--sender <addr>` to fill a real address; still unsigned.
+
+```bash
+go run ./cmd/register
+go run ./cmd/register --interval 100 --fee 10000 --funding 40000 --target 769891902
+```
+
+## Simulate execute (no key, never sends)
+
+`go run ./cmd/simulate` lists due upkeeps, skips **81** (Vigil), and asks TestNet algod to evaluate `execute(uint64)` (`selector 5b49cc5c`) with empty signatures and unnamed-resource access. It does **not** broadcast. Sender is the upkeep creator (already on chain); no mnemonic is loaded. Live `Call` still refuses 87 (Rot).
+
+```bash
+go run ./cmd/simulate
+go run ./cmd/simulate --upkeep 19
+```
+
 ## Cost
 
 Each `execute` pays **min fee + 2000 µALGO extra** (fee pooling for the inner app call and the keeper payment). Today that is 3000 µALGO out; the contract pays the caller the upkeep's base fee (typically 4000–10000 µALGO) only if the inner call succeeds. A rejected `execute` is discarded by algod and costs nothing.
@@ -54,9 +82,11 @@ Each `execute` pays **min fee + 2000 µALGO extra** (fee pooling for the inner a
 ## What is broken / incomplete
 
 - Fee escalation (`fee_cap`) is ignored; due-ness uses the base fee only.
-- No simulate/populate of extra foreign references. Targets that need accounts, assets, or apps beyond the target itself fail and back off (1, 2, 4, 8 intervals, cap 1286 rounds). Pulse does not need them.
-- Upkeep 81 is skipped on purpose.
+- Keeper `--once` still does not populate extra foreign references from simulate. `cmd/simulate` is a no-key probe only. Targets that need extra accounts/assets/apps fail and back off (1, 2, 4, 8 intervals, cap 1286 rounds). Pulse does not need them.
+- Upkeep 81 is skipped on purpose. Live execute also refuses 87.
 - Real `execute` from this repo is **not done** (see proof table).
+- `cmd/register` is dry-run only. A live register still needs a funded TestNet account.
+- Execute of upkeep 87 (Rot) is refused the same way as 81.
 - No indexer, no MainNet, not a Python port.
 
 Pages: https://corvid-agent.github.io/arcron-keeper-go/

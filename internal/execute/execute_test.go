@@ -29,4 +29,8 @@ func TestCallRefusesSkipInUnsignedPath(t *testing.T) {
 	if err == nil {
 		t.Fatal("must refuse unsigned execute of 81")
 	}
+	_, err = b.Unsigned(nil, upkeep.Upkeep{ID: 87, Target: 770082145})
+	if err == nil {
+		t.Fatal("must refuse unsigned execute of 87")
+	}
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/algorand/go-algorand-sdk/v2/abi"
 	"github.com/algorand/go-algorand-sdk/v2/client/v2/algod"
+	"github.com/algorand/go-algorand-sdk/v2/client/v2/common/models"
 	"github.com/algorand/go-algorand-sdk/v2/crypto"
 	"github.com/algorand/go-algorand-sdk/v2/transaction"
 	"github.com/algorand/go-algorand-sdk/v2/types"
@@ -55,7 +56,7 @@ func AppArgs(id uint64) ([][]byte, error) {
 // Unsigned builds the NoOp app call: box u||id, foreign app = target,
 // extra fee 2000 µALGO. It does not sign.
 func (b *Builder) Unsigned(ctx context.Context, u upkeep.Upkeep) (types.Transaction, error) {
-	if u.Skip() {
+	if u.Forbidden() {
 		return types.Transaction{}, fmt.Errorf("refusing to execute skipped upkeep %d", u.ID)
 	}
 	args, err := AppArgs(u.ID)
@@ -104,7 +105,7 @@ func (b *Builder) Unsigned(ctx context.Context, u upkeep.Upkeep) (types.Transact
 // Call signs and submits execute(upkeep_id). Skip 81. On a lost race the
 // backoff file is left alone; on a target failure it is updated.
 func (b *Builder) Call(ctx context.Context, u upkeep.Upkeep) (Result, error) {
-	if u.Skip() {
+	if u.Forbidden() {
 		return Result{UpkeepID: u.ID, Skipped: true}, nil
 	}
 	tx, err := b.Unsigned(ctx, u)
@@ -191,4 +192,81 @@ func FeeOnTxn(tx types.Transaction) uint64 {
 func SameSelector() bool {
 	want, _ := abi.MethodFromSignature(executeSig)
 	return bytes.Equal(want.GetSelector(), []byte{0x5b, 0x49, 0xcc, 0x5c})
+}
+
+// SimResult is one no-key simulate of execute(upkeep_id). Nothing is sent.
+type SimResult struct {
+	UpkeepID       uint64 `json:"upkeep_id"`
+	Target         uint64 `json:"target"`
+	Selector       string `json:"selector"`
+	Skipped        bool   `json:"skipped,omitempty"`
+	SkipReason     string `json:"skip_reason,omitempty"`
+	WouldSucceed   bool   `json:"would_succeed"`
+	FailureMessage string `json:"failure_message,omitempty"`
+	LastRound      uint64 `json:"last_round,omitempty"`
+	AppBudget      uint64 `json:"app_budget_consumed,omitempty"`
+	Sent           bool   `json:"sent"`
+}
+
+// Simulate builds execute(upkeep_id) with an empty signature and asks algod
+// to evaluate it. It never broadcasts. Upkeep 81 is refused; 87 may be
+// simulated (read-only) but is still refused by Call.
+func Simulate(ctx context.Context, c *chain.Client, sender types.Address, u upkeep.Upkeep) (SimResult, error) {
+	out := SimResult{UpkeepID: u.ID, Target: u.Target, Selector: SelectorHex(), Sent: false}
+	if u.Skip() {
+		out.Skipped = true
+		out.SkipReason = "upkeep 81 (Vigil)"
+		return out, nil
+	}
+	method, err := abi.MethodFromSignature(executeSig)
+	if err != nil {
+		return out, err
+	}
+	sp, err := c.Algod.SuggestedParams().Do(ctx)
+	if err != nil {
+		return out, err
+	}
+	sp.FlatFee = true
+	min := uint64(sp.MinFee)
+	if min == 0 {
+		min = uint64(sp.Fee)
+	}
+	if min == 0 {
+		min = 1000
+	}
+	sp.Fee = types.MicroAlgos(min + ExtraFeeMicroAlgos)
+
+	empty := transaction.EmptyTransactionSigner{}
+	atc := transaction.AtomicTransactionComposer{}
+	err = atc.AddMethodCall(transaction.AddMethodCallParams{
+		AppID:           c.AppID,
+		Method:          method,
+		MethodArgs:      []interface{}{u.ID},
+		Sender:          sender,
+		SuggestedParams: sp,
+		Signer:          empty,
+		ForeignApps:     []uint64{u.Target},
+		BoxReferences: []types.AppBoxReference{{
+			AppID: c.AppID,
+			Name:  upkeep.BoxKey(u.ID),
+		}},
+	})
+	if err != nil {
+		return out, fmt.Errorf("compose execute(%d): %w", u.ID, err)
+	}
+	sim, err := atc.Simulate(ctx, c.Algod, models.SimulateRequest{
+		AllowEmptySignatures:  true,
+		AllowUnnamedResources: true,
+	})
+	if err != nil {
+		return out, fmt.Errorf("simulate execute(%d): %w", u.ID, err)
+	}
+	out.LastRound = sim.SimulateResponse.LastRound
+	if len(sim.SimulateResponse.TxnGroups) > 0 {
+		g := sim.SimulateResponse.TxnGroups[0]
+		out.FailureMessage = g.FailureMessage
+		out.AppBudget = g.AppBudgetConsumed
+		out.WouldSucceed = g.FailureMessage == ""
+	}
+	return out, nil
 }

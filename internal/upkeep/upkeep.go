@@ -14,8 +14,12 @@ import (
 const HeadSize = 130
 
 // SkippedID is never executed by this keeper. It is an agent-owned upkeep on
-// the first-party CorvidLabs TestNet demo.
+// the first-party CorvidLabs TestNet demo (Vigil).
 const SkippedID = 81
+
+// SkippedRotID is Rot (target 770082145). Listing may still show it as due;
+// execute and simulate must not touch it — the inner call reverts.
+const SkippedRotID = 87
 
 // Upkeep is the decoded 130-byte box head.
 type Upkeep struct {
@@ -85,7 +89,13 @@ func (u Upkeep) Due(lastRound uint64) bool {
 	return lastRound >= u.Next && u.Balance >= u.Fee
 }
 
-// Skip reports whether this keeper must not touch the upkeep.
+// Skip reports whether listing should hide this upkeep from due-ness.
+// Only Vigil (81) is hidden from the due list.
 func (u Upkeep) Skip() bool {
 	return u.ID == SkippedID
+}
+
+// Forbidden reports whether execute/simulate must refuse this upkeep.
+func (u Upkeep) Forbidden() bool {
+	return u.ID == SkippedID || u.ID == SkippedRotID
 }

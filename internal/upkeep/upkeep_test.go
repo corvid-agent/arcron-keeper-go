@@ -67,4 +67,13 @@ func TestSkip81(t *testing.T) {
 	if (Upkeep{ID: 82}).Skip() {
 		t.Fatal("must not skip 82")
 	}
+	if (Upkeep{ID: 87}).Skip() {
+		t.Fatal("listing still shows 87 as due; execute refuses it separately")
+	}
+	if !(Upkeep{ID: 81}).Forbidden() || !(Upkeep{ID: 87}).Forbidden() {
+		t.Fatal("execute must refuse 81 and 87")
+	}
+	if (Upkeep{ID: 19}).Forbidden() {
+		t.Fatal("must not forbid 19")
+	}
 }
