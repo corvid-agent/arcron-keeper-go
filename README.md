@@ -11,6 +11,7 @@ This talks to a **first-party CorvidLabs demo**. The contract is **unaudited** a
 | app | `769891898` on TestNet |
 | upkeep | box `19` decodes to target `769891902` (`Pulse`) — asserted in CI against live algod |
 | plod | live upkeep `110` → target `770734249` (`Plod`) — asserted in CI against live algod; next `67054248` — **not due yet** |
+| rain | hub `770130162` rain `3` is ONE (mode 1), 224-byte RainRec — asserted in CI against live algod |
 | execute txid + round | **not done** — a throwaway account was generated, but the public TestNet dispenser (`lora.algokit.io/testnet/fund`) requires a Google login this environment cannot complete. No txid is invented. |
 | command | `go run ./cmd/decode --id 19` (Pulse `769891902`); `--id 110` (Plod `770734249`) |
 
