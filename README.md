@@ -10,10 +10,11 @@ This talks to a **first-party CorvidLabs demo**. The contract is **unaudited** a
 |---|---|
 | app | `769891898` on TestNet |
 | upkeep | box `19` decodes to target `769891902` (`Pulse`) — asserted in CI against live algod |
+| plod | live upkeep `110` → target `770734249` (`Plod`), next `67054248` — **not due yet** |
 | execute txid + round | **not done** — a throwaway account was generated, but the public TestNet dispenser (`lora.algokit.io/testnet/fund`) requires a Google login this environment cannot complete. No txid is invented. |
 | command | `go run ./cmd/decode --id 19` (JSON head; target `769891902`) |
 
-`--dry-run` against live TestNet listed 11 due upkeeps, including pulse upkeep `82`, and skipped `81`.
+`go run ./cmd/listen` (unsigned, no mnemonic) listed 29 boxes, due_count 0, skipped `81`. Did not poke `87`. `go run ./cmd/register` and `go run ./cmd/simulate` remain no-key dry-runs (register has no `--send`; simulate sends nothing).
 
 ## How to run
 

@@ -1,23 +1,13 @@
 {
-  "generated_at": "2026-08-31T01:41:54Z",
+  "generated_at": "2026-08-31T03:43:15Z",
   "algod": "https://testnet-api.algonode.cloud",
   "app": 769891898,
   "genesis": "testnet-v1.0",
-  "last_round": 66833630,
-  "listed": 28,
+  "last_round": 66836332,
+  "listed": 29,
   "skipped": [
     81
   ],
-  "due_count": 1,
-  "due": [
-    {
-      "id": 87,
-      "target": 770082145,
-      "interval": 1286,
-      "next": 66793489,
-      "fee": 10000,
-      "balance": 5750021,
-      "times": 22
-    }
-  ]
+  "due_count": 0,
+  "due": []
 }
