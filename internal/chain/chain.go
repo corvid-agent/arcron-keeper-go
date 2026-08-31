@@ -27,6 +27,12 @@ const DefaultApp uint64 = 769891898
 // DefaultPulse is the first-party Pulse demo target on TestNet.
 const DefaultPulse uint64 = 769891902
 
+// DefaultPlod is the first-party Plod demo target on TestNet.
+const DefaultPlod uint64 = 770734249
+
+// DefaultPlodUpkeep is the live Plod upkeep box on the keeper app.
+const DefaultPlodUpkeep uint64 = 110
+
 // Client is an algod handle that has already passed the TestNet genesis gate.
 type Client struct {
 	Algod   *algod.Client

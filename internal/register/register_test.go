@@ -1,13 +1,16 @@
 package register
 
 import (
+	"context"
 	"encoding/binary"
 	"encoding/hex"
 	"testing"
+	"time"
 
 	"github.com/algorand/go-algorand-sdk/v2/crypto"
 	"github.com/algorand/go-algorand-sdk/v2/types"
 
+	"github.com/corvid-agent/arcron-keeper-go/internal/chain"
 	"github.com/corvid-agent/arcron-keeper-go/internal/upkeep"
 )
 
@@ -151,6 +154,70 @@ func TestBuildRejectsStarvedFunding(t *testing.T) {
 	})
 	if err == nil {
 		t.Fatal("must reject funding below one fee")
+	}
+}
+
+func TestLiveRegisterDryRunUnsigned(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	c, err := chain.Connect(ctx, chain.DefaultAlgod, chain.DefaultApp)
+	if err != nil {
+		t.Fatalf("connect TestNet: %v", err)
+	}
+	nextID, err := c.NextUpkeepID(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if nextID == 0 {
+		t.Fatal("next_upkeep_id is 0")
+	}
+	sp, err := c.Algod.SuggestedParams().Do(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	args, err := DefaultCallArgs()
+	if err != nil {
+		t.Fatal(err)
+	}
+	sender := EphemeralSender()
+	g, err := Build(Params{
+		AppID:      c.AppID,
+		Sender:     sender,
+		AppAddress: c.AppAddress(),
+		Suggested:  sp,
+		NextID:     nextID,
+		Target:     chain.DefaultPulse,
+		CallArgs:   args,
+		Interval:   100,
+		Fee:        10000,
+		Funding:    40000,
+		Policy:     SkipAhead,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(g.Txns) != GroupSize {
+		t.Fatalf("group %d", len(g.Txns))
+	}
+	if uint64(g.Txns[2].ApplicationID) != chain.DefaultApp {
+		t.Fatalf("app %d", g.Txns[2].ApplicationID)
+	}
+	if binary.BigEndian.Uint64(g.BoxKey[1:]) != nextID {
+		t.Fatalf("box key id %x want %d", g.BoxKey, nextID)
+	}
+	if string(g.Txns[0].Note) != "arcron:mbr" || string(g.Txns[1].Note) != "arcron:funding" {
+		t.Fatalf("notes %q %q", g.Txns[0].Note, g.Txns[1].Note)
+	}
+	if g.Txns[0].GenesisID != chain.TestNetGenesisID {
+		t.Fatalf("genesis %q", g.Txns[0].GenesisID)
+	}
+	if sp.FirstRoundValid == 0 {
+		t.Fatal("live suggested params missing first valid round")
+	}
+	// Build returns types.Transaction, not SignedTxn. Nothing is broadcast.
+	var zero types.Digest
+	if g.Txns[0].Group == zero || g.Txns[0].Group != g.Txns[2].Group {
+		t.Fatal("group id not assigned across the three txns")
 	}
 }
 

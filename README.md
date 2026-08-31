@@ -10,9 +10,9 @@ This talks to a **first-party CorvidLabs demo**. The contract is **unaudited** a
 |---|---|
 | app | `769891898` on TestNet |
 | upkeep | box `19` decodes to target `769891902` (`Pulse`) — asserted in CI against live algod |
-| plod | live upkeep `110` → target `770734249` (`Plod`), next `67054248` — **not due yet** |
+| plod | live upkeep `110` → target `770734249` (`Plod`) — asserted in CI against live algod; next `67054248` — **not due yet** |
 | execute txid + round | **not done** — a throwaway account was generated, but the public TestNet dispenser (`lora.algokit.io/testnet/fund`) requires a Google login this environment cannot complete. No txid is invented. |
-| command | `go run ./cmd/decode --id 19` (JSON head; target `769891902`) |
+| command | `go run ./cmd/decode --id 19` (Pulse `769891902`); `--id 110` (Plod `770734249`) |
 
 `go run ./cmd/listen` (unsigned, no mnemonic) listed 29 boxes, due_count 0, skipped `81`. Did not poke `87`. `go run ./cmd/register` and `go run ./cmd/simulate` remain no-key dry-runs (register has no `--send`; simulate sends nothing).
 
@@ -23,6 +23,7 @@ Go 1.24+. Decode and listen need no key. A TestNet mnemonic is required only to 
 ```bash
 go test ./...
 go run ./cmd/decode --id 19   # JSON of the 130-byte head; live box 19 → target 769891902
+go run ./cmd/decode --id 110  # live plod box; target 770734249
 go run ./cmd/listen           # writes docs/due.json; skip 81; no key
 go run ./cmd/register         # prints unsigned register group; signs nothing; no --send
 go run ./cmd/simulate         # no-key algod simulate of execute() on due boxes; skip 81; nothing sent
@@ -38,7 +39,7 @@ go run ./cmd/keeper --once    # signs; needs funded TestNet account
 
 ## Decode (no key)
 
-`go run ./cmd/decode --id 19` fetches one box by id from TestNet algod (default app `769891898`), refuses any non-TestNet genesis, and prints the 130-byte head as JSON. Live box 19 has target `769891902` (Pulse). Flags: `--algod`, `--app-id`.
+`go run ./cmd/decode --id 19` fetches one box by id from TestNet algod (default app `769891898`), refuses any non-TestNet genesis, and prints the 130-byte head as JSON. Live box 19 has target `769891902` (Pulse). Live box 110 has target `770734249` (Plod). Flags: `--algod`, `--app-id`.
 
 ## Listener (no key)
 
