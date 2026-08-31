@@ -25,6 +25,7 @@ go test ./...
 go run ./cmd/decode --id 19   # JSON of the 130-byte head; live box 19 → target 769891902
 go run ./cmd/decode --id 110  # live plod box; target 770734249
 go run ./cmd/listen           # writes docs/due.json; skip 81; no key
+go run ./cmd/rain             # JSON of RainRec boxes on hub 770130162; no key
 go run ./cmd/register         # prints unsigned register group; signs nothing; no --send
 go run ./cmd/simulate         # no-key algod simulate of execute() on due boxes; skip 81; nothing sent
 go run ./cmd/keeper --dry-run # lists due upkeeps; signs nothing
