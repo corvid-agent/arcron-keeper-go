@@ -1,4 +1,5 @@
-// Command rain lists RainRec boxes on TestNet hub 770130162. No key.
+// Command rain lists RainRec boxes on TestNet hub 770130162 and writes
+// docs/rain.json. No key. Not a send.
 package main
 
 import (
@@ -9,6 +10,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/algorand/go-algorand-sdk/v2/types"
 	"github.com/corvid-agent/arcron-keeper-go/internal/chain"
@@ -35,9 +38,20 @@ type rainRow struct {
 	Status      string `json:"status"`
 }
 
+type report struct {
+	GeneratedAt string    `json:"generated_at"`
+	Algod       string    `json:"algod"`
+	Hub         uint64    `json:"hub"`
+	Genesis     string    `json:"genesis"`
+	LastRound   uint64    `json:"last_round"`
+	NextID      uint64    `json:"next_rain_id"`
+	Rains       []rainRow `json:"rains"`
+}
+
 func run() error {
 	algodURL := flag.String("algod", chain.DefaultAlgod, "TestNet algod URL")
 	hub := flag.Uint64("hub", rain.DefaultHub, "Rain hub app id")
+	out := flag.String("out", "docs/rain.json", "output path for rain.json")
 	flag.Parse()
 	ctx := context.Background()
 	c, err := chain.Connect(ctx, *algodURL, *hub)
@@ -52,12 +66,15 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	out := struct {
-		Hub       uint64    `json:"hub"`
-		LastRound uint64    `json:"last_round"`
-		NextID    uint64    `json:"next_rain_id"`
-		Rains     []rainRow `json:"rains"`
-	}{Hub: *hub, LastRound: last, NextID: nextID}
+	payload := report{
+		GeneratedAt: time.Now().UTC().Format("2006-01-02T15:04:05Z"),
+		Algod:       *algodURL,
+		Hub:         *hub,
+		Genesis:     chain.TestNetGenesisID,
+		LastRound:   last,
+		NextID:      nextID,
+		Rains:       []rainRow{},
+	}
 	for id := uint64(1); id <= nextID; id++ {
 		raw, err := c.GetBox(ctx, rain.BoxKey(id))
 		if err != nil {
@@ -67,15 +84,25 @@ func run() error {
 		if err != nil {
 			return err
 		}
-		out.Rains = append(out.Rains, rainRow{
+		payload.Rains = append(payload.Rains, rainRow{
 			ID: rec.ID, Label: rec.Label, Creator: types.Address(rec.Creator).String(),
 			Mode: rain.ModeName(rec.Mode), Drip: rec.Drip, Pot: rec.Pot, Tickets: rec.Tickets,
 			PrizeLocked: rec.PrizeLocked, CommitRound: rec.CommitRound, Status: rec.Status(last),
 		})
 	}
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", "  ")
-	return enc.Encode(out)
+	body, err := json.MarshalIndent(payload, "", "  ")
+	if err != nil {
+		return err
+	}
+	body = append(body, '\n')
+	if err := os.MkdirAll(filepath.Dir(*out), 0o755); err != nil {
+		return err
+	}
+	if err := os.WriteFile(*out, body, 0o644); err != nil {
+		return err
+	}
+	fmt.Printf("wrote %s last_round=%d rains=%d\n", *out, last, len(payload.Rains))
+	return nil
 }
 
 func globalUint(ctx context.Context, c *chain.Client, want string) (uint64, error) {
