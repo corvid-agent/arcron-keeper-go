@@ -1,0 +1,35 @@
+name: rain
+
+on:
+  schedule:
+    - cron: "0 15,18,22 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rain
+  cancel-in-progress: true
+
+jobs:
+  rain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - name: Rain (no key)
+        run: go run ./cmd/rain
+      - name: Commit docs/rain.json if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/rain.json
+          if git diff --cached --quiet; then
+            echo "rain.json unchanged"
+          else
+            git commit -m "Refresh docs/rain.json from TestNet hub 770130162"
+            git push
+          fi
