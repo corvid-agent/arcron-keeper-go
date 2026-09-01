@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-01T18:01:46Z",
+  "generated_at": "2026-09-01T23:38:14Z",
   "algod": "https://testnet-api.algonode.cloud",
   "hub": 770130162,
   "genesis": "testnet-v1.0",
-  "last_round": 66887542,
+  "last_round": 66895038,
   "next_rain_id": 5,
   "rains": [
     {
@@ -12,7 +12,7 @@
       "creator": "E5M2OH5XNDMNABJ6VOFOUVR2IKRPCGQH43PVC5P3DWQQ2LV2VJV2FJZQ3E",
       "mode": "SPLIT",
       "drip": 50000,
-      "pot": 800000,
+      "pot": 750000,
       "tickets": 1,
       "prize_locked": 0,
       "commit_round": 0,
