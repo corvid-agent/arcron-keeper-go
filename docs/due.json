@@ -1,78 +1,15 @@
 {
-  "generated_at": "2026-09-09T18:27:08Z",
+  "generated_at": "2026-09-09T23:27:35Z",
   "algod": "https://testnet-api.algonode.cloud",
   "app": 769891898,
   "genesis": "testnet-v1.0",
-  "last_round": 67144433,
+  "last_round": 67151111,
   "listed": 36,
   "skipped": [
     81
   ],
-  "due_count": 11,
+  "due_count": 2,
   "due": [
-    {
-      "id": 84,
-      "target": 770081902,
-      "interval": 1286,
-      "next": 67144418,
-      "fee": 10000,
-      "balance": 5019078,
-      "times": 262
-    },
-    {
-      "id": 85,
-      "target": 770081916,
-      "interval": 1286,
-      "next": 67144427,
-      "fee": 10000,
-      "balance": 3002742,
-      "times": 263
-    },
-    {
-      "id": 86,
-      "target": 770081921,
-      "interval": 1286,
-      "next": 67144433,
-      "fee": 10000,
-      "balance": 3022340,
-      "times": 266
-    },
-    {
-      "id": 92,
-      "target": 770081921,
-      "interval": 1286,
-      "next": 67144325,
-      "fee": 4000,
-      "balance": 2108000,
-      "times": 242
-    },
-    {
-      "id": 93,
-      "target": 770081916,
-      "interval": 1286,
-      "next": 67144370,
-      "fee": 10000,
-      "balance": 5020914,
-      "times": 245
-    },
-    {
-      "id": 94,
-      "target": 770081916,
-      "interval": 1286,
-      "next": 67144373,
-      "fee": 10000,
-      "balance": 4996417,
-      "times": 247
-    },
-    {
-      "id": 113,
-      "target": 770746178,
-      "interval": 1286,
-      "next": 67143521,
-      "fee": 4000,
-      "balance": 2332000,
-      "times": 227
-    },
     {
       "id": 116,
       "target": 770769163,
@@ -83,15 +20,6 @@
       "times": 2
     },
     {
-      "id": 117,
-      "target": 770881358,
-      "interval": 1286,
-      "next": 67144122,
-      "fee": 4000,
-      "balance": 2308000,
-      "times": 179
-    },
-    {
       "id": 118,
       "target": 770881395,
       "interval": 1700,
@@ -99,15 +27,6 @@
       "fee": 4000,
       "balance": 504000,
       "times": 0
-    },
-    {
-      "id": 119,
-      "target": 770881471,
-      "interval": 1286,
-      "next": 67144190,
-      "fee": 4000,
-      "balance": 2308000,
-      "times": 179
     }
   ]
 }
