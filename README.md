@@ -47,10 +47,13 @@ go run ./cmd/keeper --once    # signs; needs funded TestNet account
 
 `go run ./cmd/listen` lists every upkeep box on app `769891898`, skips 81, and writes `docs/due.json` (due = last-round ≥ next and balance ≥ fee). Shape: `last_round`, `due_count`, `due[]`, `skipped`. It does **not** sign, has **no mnemonic**, and is **not** an execute.
 
-Weekdays at 15:00, 18:00, and 22:00 UTC (9am / 12pm / 4pm America/Denver) `.github/workflows/listen.yml` runs `go run ./cmd/listen` (Go 1.24) and commits `docs/due.json` if it changed. No secrets. Pages shows that list.
+Weekdays at 15:00, 18:00, and 22:00 UTC (9am / 12pm / 4pm America/Denver) `.github/workflows/listen.yml` runs `go run ./cmd/listen` (Go 1.24), appends one sample to `docs/history.json` when `last_round` is new (`scripts/append_history.py`), and commits both files if either changed. No secrets. Pages shows that list plus phosphor history graphs (in-page sql.js over append-only `docs/history.json`).
+
+Live board: <https://corvid-agent.github.io/arcron-keeper-go/>
 
 ```bash
 go run ./cmd/listen
+python3 scripts/append_history.py   # dedupe-by-round; no key
 ```
 
 ## Register dry-run (no key, never sends)

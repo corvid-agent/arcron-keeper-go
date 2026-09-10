@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KEEPER-GO — DUE, skip 81</title>
-  <meta name="description" content="TestNet due board from docs/due.json. Skip upkeep 81. Read-only. Not an execute." />
+  <meta name="description" content="TestNet due board from docs/due.json with phosphor history graphs. Skip upkeep 81. Read-only. Not an execute." />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <main class="crt" id="crt">
     <header>
       <h1>Keeper-Go</h1>
-      <div class="meta">TestNet · listener · skip 81 · not an execute</div>
+      <div class="meta">TestNet · listener · skip 81 · not an execute · sql.js history</div>
     </header>
 
     <section class="status-row">
@@ -39,6 +39,35 @@
       </div>
     </section>
 
+    <section class="graphs" id="graphs" aria-label="Keeper-Go TestNet due history graphs">
+      <div class="graph-cell">
+        <div class="label">Due count · samples</div>
+        <canvas id="due-canvas" width="640" height="160" aria-label="due count over samples"></canvas>
+        <div class="graph-legend">
+          <span class="lg due">due</span>
+        </div>
+        <div class="meta" id="due-meta">append-only history.json</div>
+      </div>
+      <div class="graph-cell">
+        <div class="label">Due escrow vs fee</div>
+        <canvas id="escrow-canvas" width="640" height="160" aria-label="due escrow and fee pressure over samples"></canvas>
+        <div class="graph-legend">
+          <span class="lg escrow">escrow</span>
+          <span class="lg fee">fee</span>
+        </div>
+        <div class="meta" id="escrow-meta">TestNet only · sum of due boxes</div>
+      </div>
+      <div class="graph-cell wide">
+        <div class="label">Listed / skipped</div>
+        <canvas id="listed-canvas" width="640" height="120" aria-label="listed and skipped over samples"></canvas>
+        <div class="graph-legend">
+          <span class="lg listed">listed</span>
+          <span class="lg skipped">skipped</span>
+        </div>
+        <div class="meta" id="listed-meta">skip 81 always · not an execute</div>
+      </div>
+    </section>
+
     <section class="due-list" aria-label="due upkeeps">
       <div class="label">Due list</div>
       <p class="why">last-round ≥ next and balance ≥ fee · skip 81 · from due.json, not live algod</p>
@@ -52,7 +81,8 @@
     </section>
 
     <p class="notes" id="notes">
-      Unsigned Go listener wrote this list from TestNet algod (last-round ≥ next and balance ≥ fee). Skip upkeep 81. The board does not sign and is not an execute. 
+      Unsigned Go listener wrote this list from TestNet algod (last-round ≥ next and balance ≥ fee). Skip upkeep 81. The board does not sign and is not an execute.
+      Graphs paint append-only TestNet due history from <code>docs/history.json</code> via in-page sql.js — read-only, not an execute.
       <a href="https://github.com/corvid-agent/arcron-keeper-go">source</a>
       ·
       <a href="https://testnet.explorer.perawallet.app/application/769891898">keeper 769891898</a>.
@@ -60,6 +90,7 @@
     <p class="err" id="err" hidden></p>
     <footer class="foot">Arcron is unaudited. TestNet only. Read-only, no wallet. Not an execute.</footer>
   </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.11.0/sql-wasm.js"></script>
   <script src="./app.js"></script>
   <script src="./rain.js"></script>
 </body>

@@ -259,3 +259,74 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .crt::before { display: none; }
 }
+
+.graphs {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.6rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.graph-cell {
+  background: linear-gradient(to bottom, rgba(124, 255, 107, 0.04), transparent 60%);
+  border: 1px solid var(--phosphor-dead);
+  padding: 0.75rem 0.85rem 0.65rem;
+}
+
+.graph-cell.wide { grid-column: 1 / -1; }
+
+.graph-cell .label {
+  margin-bottom: 0.45rem;
+}
+
+.graph-cell canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  background: #040a05;
+  border: 1px solid #0f1c10;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.55);
+}
+
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.45rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+}
+
+.graph-legend .lg::before {
+  content: "";
+  display: inline-block;
+  width: 0.7rem;
+  height: 2px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  background: var(--phosphor);
+  box-shadow: var(--glow);
+}
+
+.graph-legend .lg.fee::before,
+.graph-legend .lg.due::before { background: var(--phosphor); }
+.graph-legend .lg.fee::before { background: var(--amber); box-shadow: var(--glow-amber); }
+.graph-legend .lg.escrow::before { background: var(--phosphor); }
+.graph-legend .lg.listed::before { background: var(--phosphor); }
+.graph-legend .lg.skipped::before { background: var(--red); box-shadow: var(--glow-red); }
+
+.graph-cell .meta {
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+}
+
+@media (min-width: 640px) {
+  .graphs { grid-template-columns: 1fr 1fr; }
+  .graph-cell.wide { grid-column: 1 / -1; }
+}
+
