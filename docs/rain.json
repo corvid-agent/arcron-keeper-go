@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-19T20:16:56Z",
+  "generated_at": "2026-10-20T00:46:41Z",
   "algod": "https://testnet-api.algonode.cloud",
   "hub": 770130162,
   "genesis": "testnet-v1.0",
-  "last_round": 68429507,
+  "last_round": 68435488,
   "next_rain_id": 5,
   "rains": [
     {
