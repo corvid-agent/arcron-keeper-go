@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-24T02:05:23Z",
+  "generated_at": "2026-11-24T23:49:05Z",
   "algod": "https://testnet-api.algonode.cloud",
   "app": 769891898,
   "genesis": "testnet-v1.0",
-  "last_round": 69555327,
+  "last_round": 69584229,
   "listed": 36,
   "skipped": [
     81
